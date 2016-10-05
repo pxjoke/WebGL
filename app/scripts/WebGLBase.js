@@ -1,12 +1,11 @@
 export default class WebGLBase {
-  constructor(document, canvasId) {
+  constructor(canvasId, vertexShaderText, fragmentVertexText) {
     this.gl = null;
     this.canvas = document.getElementById(canvasId);
     this.vertexShader = null;
     this.fragmentShader = null;
     this.shaderProgram = null;
-    this.vertexPositionAttribute = null;
-    this.vertexShaderSource =
+    this.vertexShaderSource = vertexShaderText ||
       `
       attribute vec3 aVertexPosition;
       
@@ -16,7 +15,7 @@ export default class WebGLBase {
        void main(void) {
           gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
         }`;
-    this.fragmentShaderSource =
+    this.fragmentShaderSource = fragmentVertexText ||
       `
       void main(void) {
         gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
@@ -64,13 +63,8 @@ export default class WebGLBase {
 
     if (!this.gl.getProgramParameter(this.shaderProgram, this.gl.LINK_STATUS)) {
       console.error("Unable to initialize the shader program.");
-      return;
     }
 
-    this.gl.useProgram(this.shaderProgram);
-
-    this.vertexPositionAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexPosition");
-    this.gl.enableVertexAttribArray(this.vertexPositionAttribute);
   }
 }
 
