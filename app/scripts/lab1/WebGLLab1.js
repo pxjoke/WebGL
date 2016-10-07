@@ -22,11 +22,6 @@ export default class WebGLLab1 extends WebGLBase {
 
   drawScene() {
     // Получим местоположение переменных в программе шейдеров
-    var uCube = this.gl.getUniformLocation(this.shaderProgram, 'u_cube');
-    var uCamera = this.gl.getUniformLocation(this.shaderProgram, 'u_camera');
-    var aPosition = this.gl.getAttribLocation(this.shaderProgram, 'a_position');
-    var aColor = this.gl.getAttribLocation(this.shaderProgram, 'a_color');
-
     var vertexBuffer = this.gl.createBuffer();
     var vertices = [
       // Передняя грань
@@ -139,14 +134,9 @@ export default class WebGLLab1 extends WebGLBase {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
 
-    var cameraMatrix = mat4.create();
-    mat4.perspective(cameraMatrix, 0.785, this.aspect, 0.1, 1000);
-    mat4.translate(cameraMatrix, cameraMatrix, [0, 0, -10]);
+    mat4.perspective(this.pMatrix, 0.785, this.aspect, 0.1, 1000);
+    mat4.translate(this.pMatrix, this.pMatrix, [0, 0, -10]);
 
-// Создадим единичную матрицу положения куба
-    var cubeMatrix = mat4.create();
-
-// Запомним время последней отрисовки кадра
     var lastRenderTime = Date.now();
     var that = this;
 
@@ -159,9 +149,9 @@ export default class WebGLLab1 extends WebGLBase {
       var dt = lastRenderTime - time;
 
       // Вращаем куб относительно оси Y
-      mat4.rotateY(cubeMatrix, cubeMatrix, dt / 1000);
+      mat4.rotateY(that.mvMatrix, that.mvMatrix, dt / 1000);
       // Вращаем куб относительно оси Z
-      mat4.rotateZ(cubeMatrix, cubeMatrix, dt / 1000);
+      mat4.rotateZ(that.mvMatrix, that.mvMatrix, dt / 1000);
 
       // Очищаем сцену, закрашивая её в белый цвет
       that.gl.clearColor(0.282, 0.239, 0.545, 1.0);
@@ -171,15 +161,12 @@ export default class WebGLLab1 extends WebGLBase {
       that.gl.enable(that.gl.DEPTH_TEST);
 
       that.gl.bindBuffer(that.gl.ARRAY_BUFFER, vertexBuffer);
-      that.gl.enableVertexAttribArray(aPosition);
-      that.gl.vertexAttribPointer(aPosition, 3, that.gl.FLOAT, false, 0, 0);
+      that.gl.vertexAttribPointer(that.shaderProgram.vertexPositionAttribute, 3, that.gl.FLOAT, false, 0, 0);
 
       that.gl.bindBuffer(that.gl.ARRAY_BUFFER, colorBuffer);
-      that.gl.enableVertexAttribArray(aColor);
-      that.gl.vertexAttribPointer(aColor, 3, that.gl.FLOAT, false, 0, 0);
+      that.gl.vertexAttribPointer(that.shaderProgram.vertexColorAttribute, 3, that.gl.FLOAT, false, 0, 0);
 
-      that.gl.uniformMatrix4fv(uCube, false, cubeMatrix);
-      that.gl.uniformMatrix4fv(uCamera, false, cameraMatrix);
+      that._applyMatrixUniforms();
 
       that.gl.drawArrays(that.gl.TRIANGLES, 0, 36);
 

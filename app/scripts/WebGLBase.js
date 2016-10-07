@@ -5,9 +5,11 @@ export default class WebGLBase {
     this.vertexShader = null;
     this.fragmentShader = null;
     this.shaderProgram = null;
+    this.mvMatrix = mat4.create();
+    this.pMatrix = mat4.create();
     this.vertexShaderSource = vertexShaderText ||
       `
-      attribute vec3 aVertexPosition;
+       attribute vec3 aVertexPosition;
       
        uniform mat4 uMVMatrix;
        uniform mat4 uPMatrix;
@@ -79,6 +81,11 @@ export default class WebGLBase {
 
     this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uPMatrix");
     this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
+  }
+
+  _applyMatrixUniforms() {
+    this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.pMatrix);
+    this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
   }
 }
 
