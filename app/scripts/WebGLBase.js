@@ -65,6 +65,20 @@ export default class WebGLBase {
       console.error("Unable to initialize the shader program.");
     }
 
+    this.gl.useProgram(this.shaderProgram);
+    this._updateShadersVarsLocation();
+
+  }
+
+  _updateShadersVarsLocation() {
+    this.shaderProgram.vertexPositionAttribute = this.gl.getAttribLocation(this.shaderProgram, 'aVertexPosition');
+    this.gl.enableVertexAttribArray(this.shaderProgram.vertexPositionAttribute);
+
+    this.shaderProgram.vertexColorAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexColor");
+    this.gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
+
+    this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uPMatrix");
+    this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
   }
 }
 

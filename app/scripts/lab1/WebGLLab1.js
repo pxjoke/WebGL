@@ -170,8 +170,6 @@ export default class WebGLLab1 extends WebGLBase {
       // Включаем фильтр глубины
       that.gl.enable(that.gl.DEPTH_TEST);
 
-      that.gl.useProgram(that.shaderProgram);
-
       that.gl.bindBuffer(that.gl.ARRAY_BUFFER, vertexBuffer);
       that.gl.enableVertexAttribArray(aPosition);
       that.gl.vertexAttribPointer(aPosition, 3, that.gl.FLOAT, false, 0, 0);
